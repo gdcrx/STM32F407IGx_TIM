@@ -1,4 +1,3 @@
-
 /* 包含头文件 ----------------------------------------------------------------*/
 #include "bsp/bsp_usart.h"
 
@@ -87,13 +86,9 @@ void MX_USARTx_Init(void)
   /* 串口外设时钟使能 */
   USART_RCC_CLK_ENABLE();
   
-  // 串口（外设）初始化结构体
-  UART_InitTypeDef init;
-  
-
+  // 串口（外设）初始化结构体 
   husartx.Instance = USARTx;
-  // husartx.Init = init; 
-    husartx.Init.BaudRate = USARTx_BAUDRATE;          // 波特率
+  husartx.Init.BaudRate = USARTx_BAUDRATE;          // 波特率
   husartx.Init.WordLength = UART_WORDLENGTH_8B;     // 字长8位
   husartx.Init.StopBits = UART_STOPBITS_1;          // 停止位 1位
   husartx.Init.Parity = UART_PARITY_NONE;           // 校验位 无
@@ -106,4 +101,30 @@ void MX_USARTx_Init(void)
   
   /* 配置串口中断并使能，需要放在HAL_UART_Init函数后执行修改才有效 */
   MX_NVIC_USARTx_Init();
+}
+
+ 
+/**
+  * 函数功能: 重定向c库函数printf到USARTx
+  * 输入参数: 无
+  * 返 回 值: 无
+  * 说    明：无
+  */
+int fputc(int ch, FILE *f)
+{
+  HAL_UART_Transmit(&husartx, (uint8_t *)&ch, 1, 0xffff);
+  return ch;
+}
+
+/**
+  * 函数功能: 重定向c库函数getchar,scanf到USARTx
+  * 输入参数: 无
+  * 返 回 值: 无
+  * 说    明：无
+  */
+int fgetc(FILE * f)
+{
+  uint8_t ch = 0;
+  HAL_UART_Receive(&husartx,&ch, 1, 0xffff);
+  return ch;
 }
