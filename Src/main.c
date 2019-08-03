@@ -20,10 +20,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-// æ¥æ”¶ç·©è¡
+// ½ÓÊÕ¾Ğn
 uint8_t aRxBuffer;
 
-// å®šæ—¶å™¨è®¡æ•°æµ‹è¯•
+// ¶¨Ê±Æ÷¼ÆÊı²âÊÔ
 __IO uint16_t timer_count=0;
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,7 +44,7 @@ int main(void)
 
    uint8_t txbuf[50];
    
-  /* å¤ä½æ‰€æœ‰å¤–è®¾ï¼Œåˆå§‹åŒ–Flashæ¥å£å’Œç³»ç»Ÿæ»´ç­”å®šæ—¶å™¨
+  /* ¸´Î»ËùÓĞÍâÉè£¬³õÊ¼»¯Flash½Ó¿ÚºÍÏµÍ³µÎ´ğ¶¨Ê±Æ÷
   STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, Flash preread and Buffer caches
        - Systick timer is configured by default as source of time base, but user 
@@ -56,51 +56,56 @@ int main(void)
      */
   HAL_Init();
 
-  /* é…ç½®ç³»ç»Ÿæ—¶é’Ÿ Configure the system clock to 168 MHz */
+  /* ÅäÖÃÏµÍ³Ê±ÖÓ Configure the system clock to 168 MHz */
   SystemClock_Config();
    
-  /* æ¿è½½LEDåˆå§‹åŒ– */
+  /* °åÔØLED³õÊ¼»¯ */
   LED_GPIO_Init();
 
-  /* æ¿è½½KEYæŒ‰é”®åˆå§‹åŒ–*/  
+  /* °åÔØKEY°´¼ü³õÊ¼»¯*/  
   KEY_GPIO_Init();
   
-  /* åˆå§‹åŒ–ä¸²å£å¹¶é…ç½®ä¸²å£ä¸­æ–­ä¼˜å…ˆçº§ */
+  /* ³õÊ¼»¯´®¿Ú²¢ÅäÖÃ´®¿ÚÖĞ¶ÏÓÅÏÈ¼¶ */
   MX_USARTx_Init();
   
-  /* åŸºæœ¬å®šæ—¶å™¨åˆå§‹åŒ–ï¼š1msä¸­æ–­ä¸€æ¬¡ */
+  /* »ù±¾¶¨Ê±Æ÷³õÊ¼»¯£º1msÖĞ¶ÏÒ»´Î */
   BASIC_TIMx_Init();
   
-  /* åœ¨ä¸­æ–­æ¨¡å¼ä¸‹å¯åŠ¨å®šæ—¶å™¨ */
+  /* ÔÚÖĞ¶ÏÄ£Ê½ÏÂÆô¶¯¶¨Ê±Æ÷ */
   HAL_TIM_Base_Start_IT(&htimx);
   
   
-  memcpy(txbuf,"è¿™æ˜¯ä¸€ä¸ªä¸²å£ä¸­æ–­æ¥æ”¶å›æ˜¾å®éªŒ\r\n",50);
+  memcpy(txbuf,"ÕâÊÇÒ»¸ö´®¿ÚÖĞ¶Ï½ÓÊÕ»ØÏÔÊµÑé\r\n",50);
   HAL_UART_Transmit(&husartx,txbuf,strlen((char *)txbuf),1000);
   
-  memcpy(txbuf,"è¾“å…¥æ•°æ®å¹¶ä»¥å›è½¦é”®ç»“æŸ\r\n",50);
+  memcpy(txbuf,"ÊäÈëÊı¾İ²¢ÒÔ»Ø³µ¼ü½áÊø\r\n",50);
   HAL_UART_Transmit(&husartx,txbuf,strlen((char *)txbuf),1000);
   
   
-  /* ä¸­æ–­æ¨¡å¼å¯åŠ¨ä¸²å£æ¥æ”¶ï¼ˆè¨­ç½®çŠ¶æ€å¯„å­˜å™¨ï¼ˆSRï¼‰çš„RXNEçˆ²1ï¼Œä½¿èƒ½æ¥æ”¶ä¸­æ–­ï¼Œæ¥æ”¶æ•¸æ“šæ™‚è¿›å…¥ä¸­æ–­å›è°ƒå‡½æ•°ï¼‰ */
+  /* ÖĞ¶ÏÄ£Ê½Æô¶¯´®¿Ú½ÓÊÕ£¨ÔOÖÃ×´Ì¬¼Ä´æÆ÷£¨SR£©µÄRXNE ‘1£¬Ê¹ÄÜ½ÓÊÕÖĞ¶Ï£¬½ÓÊÕ”µ“ş•r½øÈëÖĞ¶Ï»Øµ÷º¯Êı£© */
   HAL_UART_Receive_IT(&husartx,&aRxBuffer,1);
+  
+  static float float_num=0.00;
   
   /* Infinite loop */
   while (1)
   {
-    if(timer_count == 1000)
+    if(timer_count >= 1000)
     {
       timer_count = 0;
       LED1_TOGGLE;      
+      
+      float_num+=0.01f;
+      printf("float_numµÄÖµÎª: %.4f\r\n",float_num);
     }    
   }
 }
 
 /**
-  * å‡½æ•°åŠŸèƒ½: åŸºæœ¬å®šæ—¶å™¨ä¸­æ–­å›è°ƒå‡½æ•°
-  * è¾“å…¥å‚æ•°: htimï¼šåŸºæœ¬å®šæ—¶å™¨å¥æŸ„ç±»å‹æŒ‡é’ˆ
-  * è¿” å› å€¼: æ— 
-  * è¯´    æ˜: 
+  * º¯Êı¹¦ÄÜ: »ù±¾¶¨Ê±Æ÷ÖĞ¶Ï»Øµ÷º¯Êı
+  * ÊäÈë²ÎÊı: htim£º»ù±¾¶¨Ê±Æ÷¾ä±úÀàĞÍÖ¸Õë
+  * ·µ »Ø Öµ: ÎŞ
+  * Ëµ    Ã÷: 
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -108,14 +113,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 /**
-  * å‡½æ•°åŠŸèƒ½: ä¸²å£æ¥æ”¶å®Œæˆå›è°ƒå‡½æ•°
-  * è¾“å…¥å‚æ•°: æ— 
-  * è¿” å› å€¼: æ— 
-  * è¯´    æ˜ï¼šæ— 
+  * º¯Êı¹¦ÄÜ: ´®¿Ú½ÓÊÕÍê³É»Øµ÷º¯Êı
+  * ÊäÈë²ÎÊı: ÎŞ
+  * ·µ »Ø Öµ: ÎŞ
+  * Ëµ    Ã÷£ºÎŞ
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-  // æ¥æ”¶åˆ°çš„æ•¸æ“šå¾husartxç™¼é€å‡ºå»
+  // ½ÓÊÕµ½µÄ”µ“şÄhusartx°lËÍ³öÈ¥
   HAL_UART_Transmit(&husartx,&aRxBuffer,1,0);
   HAL_UART_Receive_IT(&husartx,&aRxBuffer,1);
 }
@@ -130,7 +135,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
   *            AHB Prescaler                  = 1
   *            APB1 Prescaler                 = 4
   *            APB2 Prescaler                 = 2
-  *            HSE Frequency(Hz)              = 25000000 // ç”¨8000000 å¤–éƒ¨æ™¶æŒ¯
+  *            HSE Frequency(Hz)              = 25000000 // ÓÃ8000000 Íâ²¿¾§Õñ
   *            PLL_M                          = 25       // 8
   *            PLL_N                          = 336
   *            PLL_P                          = 2
@@ -146,24 +151,24 @@ static void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
-  /* ä½¿èƒ½PWRæ—¶é’Ÿ(Enable Power Control clock) */
+  /* Ê¹ÄÜPWRÊ±ÖÓ(Enable Power Control clock) */
   __HAL_RCC_PWR_CLK_ENABLE();
 
-  /* è®¾ç½®è°ƒå‹å™¨è¾“å‡ºç”µå‹çº§åˆ«1(The voltage scaling allows optimizing the power consumption when the device is 
+  /* ÉèÖÃµ÷Ñ¹Æ÷Êä³öµçÑ¹¼¶±ğ1(The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
      regarding system frequency refer to product datasheet.)  */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-  /* ä½¿ç”¨å¤–éƒ¨æ™¶æŒ¯ä½œä¸ºæ—¶é’Ÿæº(Enable HSE Oscillator and activate PLL with HSE as source)
-  å‚ç…§STM32F407IGx_Clock_Config.pngæ—¶é’Ÿé…ç½®å›¾*/
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;        // å¤–éƒ¨æ™¶æŒ¯ï¼Œ8MHz
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;                          // æ‰“å¼€HSE 
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;                      // æ‰“å¼€PLL
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;              // PLLæ—¶é’Ÿæºé€‰æ‹©HSE
-  RCC_OscInitStruct.PLL.PLLM = 8;                                   // 8åˆ†é¢‘MHz
-  RCC_OscInitStruct.PLL.PLLN = 336;                                 // 336å€é¢‘
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;                       // 2åˆ†é¢‘ï¼Œå¾—åˆ°168MHzä¸»æ—¶é’Ÿ
-  RCC_OscInitStruct.PLL.PLLQ = 7;                                   // USB/SDIO/éšæœºæ•°äº§ç”Ÿå™¨ç­‰çš„ä¸»PLLåˆ†é¢‘ç³»æ•°
+  /* Ê¹ÓÃÍâ²¿¾§Õñ×÷ÎªÊ±ÖÓÔ´(Enable HSE Oscillator and activate PLL with HSE as source)
+  ²ÎÕÕSTM32F407IGx_Clock_Config.pngÊ±ÖÓÅäÖÃÍ¼*/
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;        // Íâ²¿¾§Õñ£¬8MHz
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;                          // ´ò¿ªHSE 
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;                      // ´ò¿ªPLL
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;              // PLLÊ±ÖÓÔ´Ñ¡ÔñHSE
+  RCC_OscInitStruct.PLL.PLLM = 8;                                   // 8·ÖÆµMHz
+  RCC_OscInitStruct.PLL.PLLN = 336;                                 // 336±¶Æµ
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;                       // 2·ÖÆµ£¬µÃµ½168MHzÖ÷Ê±ÖÓ
+  RCC_OscInitStruct.PLL.PLLQ = 7;                                   // USB/SDIO/Ëæ»úÊı²úÉúÆ÷µÈµÄÖ÷PLL·ÖÆµÏµÊı
  
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -174,10 +179,10 @@ static void SystemClock_Config(void)
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
   RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;     // ç³»ç»Ÿæ—¶é’Ÿï¼š168MHz
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;            // AHBæ—¶é’Ÿï¼š 168MHz
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;             // APB1æ—¶é’Ÿï¼š42MHz
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;             // APB2æ—¶é’Ÿï¼š84MHz
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;     // ÏµÍ³Ê±ÖÓ£º168MHz
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;            // AHBÊ±ÖÓ£º 168MHz
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;             // APB1Ê±ÖÓ£º42MHz
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;             // APB2Ê±ÖÓ£º84MHz
   
   if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
@@ -185,32 +190,32 @@ static void SystemClock_Config(void)
     Error_Handler();
   }
 
-  // ä½¿èƒ½CSSåŠŸèƒ½ï¼Œä¼˜å…ˆä½¿ç”¨å¤–éƒ¨æ™¶æŒ¯ï¼Œå¤–éƒ¨å¤±æ•ˆæ—¶å¯ç”¨å†…éƒ¨æ—¶é’Ÿæºã€‚
+  // Ê¹ÄÜCSS¹¦ÄÜ£¬ÓÅÏÈÊ¹ÓÃÍâ²¿¾§Õñ£¬Íâ²¿Ê§Ğ§Ê±ÆôÓÃÄÚ²¿Ê±ÖÓÔ´¡£
   HAL_RCC_EnableCSS();                                            
 
-    // HAL_RCC_GetHCLKFreq()/1000    1msä¸­æ–­ä¸€æ¬¡
-    // HAL_RCC_GetHCLKFreq()/100000	 10usä¸­æ–­ä¸€æ¬¡
-	// HAL_RCC_GetHCLKFreq()/1000000 1usä¸­æ–­ä¸€æ¬¡
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);                // é…ç½®å¹¶å¯åŠ¨ç³»ç»Ÿæ»´ç­”å®šæ—¶å™¨
+    // HAL_RCC_GetHCLKFreq()/1000    1msÖĞ¶ÏÒ»´Î
+    // HAL_RCC_GetHCLKFreq()/100000	 10usÖĞ¶ÏÒ»´Î
+	// HAL_RCC_GetHCLKFreq()/1000000 1usÖĞ¶ÏÒ»´Î
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);                // ÅäÖÃ²¢Æô¶¯ÏµÍ³µÎ´ğ¶¨Ê±Æ÷
   
-    /* ç³»ç»Ÿæ»´ç­”å®šæ—¶å™¨æ—¶é’Ÿæº */
+    /* ÏµÍ³µÎ´ğ¶¨Ê±Æ÷Ê±ÖÓÔ´ */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
-  /* ç³»ç»Ÿæ»´ç­”å®šæ—¶å™¨ä¸­æ–­ä¼˜å…ˆçº§é…ç½® */
+  /* ÏµÍ³µÎ´ğ¶¨Ê±Æ÷ÖĞ¶ÏÓÅÏÈ¼¶ÅäÖÃ */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
   
 }
 
 /*
 
-ä¸­æ–­å›è°ƒå‡½æ•°
+ÖĞ¶Ï»Øµ÷º¯Êı
 
 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if(GPIO_Pin==KEY1_GPIO_PIN)
   {
-    HAL_Delay(20);/* å»¶æ—¶ä¸€å°æ®µæ—¶é—´ï¼Œæ¶ˆé™¤æŠ–åŠ¨ */
+    HAL_Delay(20);/* ÑÓÊ±Ò»Ğ¡¶ÎÊ±¼ä£¬Ïû³ı¶¶¶¯ */
     if(HAL_GPIO_ReadPin(KEY1_GPIO,KEY1_GPIO_PIN)==KEY1_DOWN_LEVEL)
     {
        
@@ -220,7 +225,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
   else if(GPIO_Pin==KEY2_GPIO_PIN)
   {
-    HAL_Delay(20);/* å»¶æ—¶ä¸€å°æ®µæ—¶é—´ï¼Œæ¶ˆé™¤æŠ–åŠ¨ */
+    HAL_Delay(20);/* ÑÓÊ±Ò»Ğ¡¶ÎÊ±¼ä£¬Ïû³ı¶¶¶¯ */
     if(HAL_GPIO_ReadPin(KEY2_GPIO,KEY2_GPIO_PIN)==KEY2_DOWN_LEVEL)
     {
     
@@ -230,7 +235,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
   else if(GPIO_Pin==KEY3_GPIO_PIN)
   {
-    HAL_Delay(20);/* å»¶æ—¶ä¸€å°æ®µæ—¶é—´ï¼Œæ¶ˆé™¤æŠ–åŠ¨ */
+    HAL_Delay(20);/* ÑÓÊ±Ò»Ğ¡¶ÎÊ±¼ä£¬Ïû³ı¶¶¶¯ */
     if(HAL_GPIO_ReadPin(KEY3_GPIO,KEY3_GPIO_PIN)==KEY3_DOWN_LEVEL)
     {
     
@@ -240,7 +245,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
   else if(GPIO_Pin==KEY4_GPIO_PIN)
   {
-    HAL_Delay(20);/* å»¶æ—¶ä¸€å°æ®µæ—¶é—´ï¼Œæ¶ˆé™¤æŠ–åŠ¨ */
+    HAL_Delay(20);/* ÑÓÊ±Ò»Ğ¡¶ÎÊ±¼ä£¬Ïû³ı¶¶¶¯ */
     if(HAL_GPIO_ReadPin(KEY4_GPIO,KEY4_GPIO_PIN)==KEY4_DOWN_LEVEL)
     {
      
@@ -252,7 +257,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
   else if(GPIO_Pin==KEY5_GPIO_PIN)
   {
-    HAL_Delay(20);/* å»¶æ—¶ä¸€å°æ®µæ—¶é—´ï¼Œæ¶ˆé™¤æŠ–åŠ¨ */
+    HAL_Delay(20);/* ÑÓÊ±Ò»Ğ¡¶ÎÊ±¼ä£¬Ïû³ı¶¶¶¯ */
     if(HAL_GPIO_ReadPin(KEY5_GPIO,KEY5_GPIO_PIN)==KEY5_DOWN_LEVEL)
     {
      

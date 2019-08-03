@@ -1,3 +1,4 @@
+
 /* 包含头文件 ----------------------------------------------------------------*/
 #include "bsp/bsp_usart.h"
 
@@ -86,7 +87,7 @@ void MX_USARTx_Init(void)
   /* 串口外设时钟使能 */
   USART_RCC_CLK_ENABLE();
   
-  // 串口（外设）初始化结构体 
+  // 串口（外设）初始化结构体
   husartx.Instance = USARTx;
   husartx.Init.BaudRate = USARTx_BAUDRATE;          // 波特率
   husartx.Init.WordLength = UART_WORDLENGTH_8B;     // 字长8位
@@ -103,7 +104,6 @@ void MX_USARTx_Init(void)
   MX_NVIC_USARTx_Init();
 }
 
- 
 /**
   * 函数功能: 重定向c库函数printf到USARTx
   * 输入参数: 无

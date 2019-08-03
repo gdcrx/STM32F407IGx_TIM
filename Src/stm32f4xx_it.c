@@ -252,7 +252,7 @@ void EXTI4_IRQHandler(void)
 }
 
 /*
-    串口中断
+    涓插彛涓柇
 */
 void USARTx_IRQHandler(void)
 { 
@@ -260,7 +260,7 @@ void USARTx_IRQHandler(void)
 }
 
 /*
-    基本定时器TIME2中断
+    鍩烘湰瀹氭椂鍣═IME2涓柇
 */ 
 void BASEC_TIM_IRQHandler(void)
 { 
